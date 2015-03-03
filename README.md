@@ -1,4 +1,8 @@
-== Sheshin ==
+# Sheshin #
+
+_she_: Knowing  
+_shin_: As it is
+
 An in-memory hierarchical key-value store (think objects) capable of providing change notifications at arbitrary keypaths.
 
 Sheshin exposes one class, Store.
