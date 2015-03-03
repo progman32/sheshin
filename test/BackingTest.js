@@ -38,7 +38,8 @@ describe('Backing', function() {
         instance.observe('parent').takeUntil(doneSignal).toArray(),
         instance.observe('parent.child').takeUntil(doneSignal).toArray(),
         instance.observe('parent.child.grandchild').takeUntil(doneSignal).toArray(),
-        function(onParent, onChild, onGrandchild) {
+        instance.observe('parent.child.grandchild.greatGrandchild').takeUntil(doneSignal).toArray(),
+        function(onParent, onChild, onGrandchild, onGreatGrandchild) {
           expect(onParent).to.deep.equal([
             {
               child: {
@@ -58,9 +59,19 @@ describe('Backing', function() {
             },
             {
               child: {
-                grandchild: 'omg'
+                grandchild: {
+                  greatGrandchild: 'omg'
+                }
               }
-            }
+            },
+            {
+              child: {
+                grandchild: {
+                  greatGrandchild: "that's deep man!"
+                }
+              }
+            },
+            100
           ]);
 
           expect(onChild).to.deep.equal([
@@ -73,15 +84,33 @@ describe('Backing', function() {
             'newGrandchildScalar',
             {},
             {
-              grandchild: 'omg'
+              grandchild: {
+                greatGrandchild: 'omg'
+              }
+            },
+            {
+              grandchild: {
+                greatGrandchild: "that's deep man!"
+              }
             },
           ]);
 
           expect(onGrandchild).to.deep.equal([
             'foo',
             'bar',
-            'omg'
+            {
+              greatGrandchild: 'omg'
+            },
+            {
+              greatGrandchild: "that's deep man!"
+            }
           ]);
+
+          expect(onGreatGrandchild).to.deep.equal([
+            'omg',
+            "that's deep man!"
+          ]);
+
           done();
         }
       );
@@ -93,7 +122,12 @@ describe('Backing', function() {
 
       instance.set('parent.child', {});
 
-      instance.set('parent.child.grandchild', 'omg');
+      instance.set('parent.child.grandchild.greatGrandchild', 'omg');
+
+      // Replace a big subtree.
+      instance.set('parent', { child: { grandchild: { greatGrandchild: "that's deep man!" } } });
+
+      instance.set('parent', 100);
 
       doneSignal.onNext();
 
